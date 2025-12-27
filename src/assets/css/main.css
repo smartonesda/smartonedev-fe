@@ -1,0 +1,228 @@
+@import "tailwindcss";
+
+/* ================= CUSTOM THEME EXTENSION ================= */
+@theme {
+  /* Dark Theme Colors */
+  --color-dark-950: #050000;
+  --color-dark-900: #1a0505;
+  --color-dark-800: #2b0b0b;
+  --color-dark-700: #3d1010;
+  --color-dark-600: #4f1515;
+  
+  /* Primary Red */
+  --color-primary: #dc2626;
+  --color-primary-glow: #ef4444;
+  --color-primary-glass: rgba(220, 38, 38, 0.15);
+  
+  /* Accent Colors */
+  --color-accent-gold: #f59e0b;
+  --color-accent-silver: #e2e8f0;
+  
+  /* Font Families */
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  
+  /* Custom Animations */
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-gradient-x: gradient-x 3s ease infinite;
+  
+  @keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+  
+  @keyframes gradient-x {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+}
+
+/* ================= BASE STYLES ================= */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-dark-950);
+  color: #e2e8f0;
+}
+
+/* Glassmorphism Red Style */
+.glass-red {
+  background: rgba(20, 5, 5, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  box-shadow: 0 4px 30px rgba(220, 38, 38, 0.1);
+}
+
+.glass-card {
+  background: rgba(30, 10, 10, 0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(220, 38, 38, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: rgba(220, 38, 38, 0.15);
+  border-color: rgba(220, 38, 38, 0.5);
+  box-shadow: 0 0 30px rgba(220, 38, 38, 0.2);
+}
+
+/* ================= SCROLLBAR ================= */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #7f1d1d;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #dc2626;
+}
+
+/* ================= CYBER GRID ================= */
+.cyber-grid {
+  background-image:
+    linear-gradient(to right, rgba(220, 38, 38, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(220, 38, 38, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+}
+
+/* ================= TECH ITEM ================= */
+.tech-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: default;
+  transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tech-item:hover {
+  color: white;
+}
+
+.tech-item svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* ================= FILTER BUTTON ================= */
+.filter-btn {
+  padding: 0.5rem 1.5rem;
+  background-color: #050000;
+  border: 1px solid #2b0b0b;
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform: skewX(-10deg);
+  cursor: pointer;
+}
+
+.filter-btn:hover {
+  color: white;
+  border-color: #dc2626;
+}
+
+.filter-btn.active {
+  background-color: #dc2626;
+  color: white;
+  border-color: #dc2626;
+  box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
+}
+
+/* ================= NAV LINK ================= */
+.nav-link {
+  position: relative;
+  color: #cbd5e1;
+  transition: color 150ms;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background-color: var(--color-primary);
+  transition: width 150ms;
+}
+
+.nav-link:hover {
+  color: var(--color-primary);
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.nav-link.active {
+  color: var(--color-primary);
+}
+
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* ================= PROJECT CARD ================= */
+.project-card {
+  --glow-color: var(--color-primary);
+  transition: all 0.5s ease;
+}
+
+.project-card:hover {
+  box-shadow: 0 0 25px -5px var(--glow-color);
+  border-color: var(--glow-color);
+  transform: translateY(-0.5rem);
+}
+
+/* ================= SKELETON LOADING ================= */
+.skeleton {
+  background: linear-gradient(90deg, #1a0505 25%, #2b0b0b 50%, #1a0505 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ================= UTILITIES ================= */
+section {
+  overflow: hidden;
+}
+
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
