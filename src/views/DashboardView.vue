@@ -186,10 +186,10 @@ const navigateTo = (route) => {
     </div>
     
     <!-- Main Content - Scrollable -->
-    <main class="flex-1 lg:ml-0 mt-16 lg:mt-0 h-screen overflow-y-auto">
-      <div class="p-6 lg:p-8">
+    <main class="flex-1 lg:ml-0 pt-16 lg:pt-0 min-h-dvh lg:h-screen overflow-y-auto pb-20 lg:pb-0">
+      <div class="p-4 sm:p-6 lg:p-8">
         <!-- Breadcrumb -->
-        <div class="mb-8 flex items-center gap-2 text-sm text-slate-400">
+        <div class="mb-6 lg:mb-8 flex items-center gap-2 text-sm text-slate-400">
           <Home class="w-4 h-4" />
           <ChevronRight class="w-4 h-4" />
           <span class="text-white">{{ router.currentRoute.value.meta?.title || 'Dashboard' }}</span>

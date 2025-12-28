@@ -101,12 +101,14 @@ const icons = [
 
 // Load project data if editing
 onMounted(async () => {
-  // Fetch categories
-  await categoryStore.fetchCategories()
+  // Start loading immediately to prevent flash
+  isLoading.value = true
   
-  if (isEditing.value) {
-    isLoading.value = true
-    try {
+  try {
+    // Fetch categories
+    await categoryStore.fetchCategories()
+    
+    if (isEditing.value) {
       // Fetch from store or API
       await galleryStore.fetchProjects()
       const project = galleryStore.projects.find(p => p.id === route.params.id)
@@ -122,11 +124,11 @@ onMounted(async () => {
         imagePreview.value = project.image || ''
         originalImage.value = project.image || '' // Store original for comparison
       }
-    } catch (error) {
-      console.error('Error loading project:', error)
-    } finally {
-      isLoading.value = false
     }
+  } catch (error) {
+    console.error('Error loading:', error)
+  } finally {
+    isLoading.value = false
   }
 })
 
@@ -373,7 +375,7 @@ const goBack = () => {
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto">
+  <div class="max-w-4xl mx-auto overflow-x-hidden">
     <!-- Toast Notification -->
     <Teleport to="body">
       <Transition name="toast">
@@ -411,23 +413,21 @@ const goBack = () => {
     </div>
 
     <!-- Loading State -->
-    <div v-if="isLoading" class="space-y-6">
-      <div class="bg-dark-900 border border-dark-800 rounded-2xl p-8">
-        <div class="space-y-6">
-          <div class="skeleton h-12 rounded-lg"></div>
-          <div class="grid grid-cols-2 gap-4">
-            <div class="skeleton h-12 rounded-lg"></div>
-            <div class="skeleton h-12 rounded-lg"></div>
+    <div v-if="isLoading" class="space-y-4 sm:space-y-6">
+      <div class="bg-dark-900 border border-dark-800 rounded-xl sm:rounded-2xl p-4 sm:p-8">
+        <div class="flex items-center justify-center py-12">
+          <div class="text-center">
+            <Loader2 class="w-10 h-10 text-primary animate-spin mx-auto mb-4" />
+            <p class="text-slate-400">Memuat data...</p>
           </div>
-          <div class="skeleton h-32 rounded-lg"></div>
         </div>
       </div>
     </div>
 
     <!-- Form -->
-    <form v-else @submit.prevent="handleSubmit" class="space-y-6">
+    <form v-else @submit.prevent="handleSubmit" class="space-y-4 sm:space-y-6">
       <!-- Basic Info Card -->
-      <div class="bg-dark-900 border border-dark-800 rounded-2xl p-8">
+      <div class="bg-dark-900 border border-dark-800 rounded-xl sm:rounded-2xl p-4 sm:p-8">
         <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
           <div class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
             <span class="text-primary font-bold">1</span>
@@ -496,9 +496,9 @@ const goBack = () => {
           <!-- Main Image -->
           <div>
             <label class="block text-sm font-medium text-slate-300 mb-2">Gambar Utama</label>
-            <div class="flex gap-4">
+            <div class="flex flex-col sm:flex-row gap-4">
               <!-- Preview -->
-              <div class="w-48 h-32 bg-dark-800 rounded-xl overflow-hidden border border-dark-700 flex-shrink-0">
+              <div class="w-full sm:w-48 h-40 sm:h-32 bg-dark-800 rounded-xl overflow-hidden border border-dark-700 flex-shrink-0">
                 <img 
                   v-if="imagePreview" 
                   :src="imagePreview" 
@@ -547,7 +547,7 @@ const goBack = () => {
             </label>
             
             <!-- Screenshots Grid -->
-            <div v-if="formData.screenshots?.length > 0" class="grid grid-cols-4 gap-3 mb-4">
+            <div v-if="formData.screenshots?.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 mb-4">
               <div 
                 v-for="(ss, idx) in formData.screenshots" 
                 :key="idx"
@@ -566,17 +566,17 @@ const goBack = () => {
             </div>
             
             <!-- Add Screenshot -->
-            <div class="flex gap-2">
+            <div class="flex flex-wrap sm:flex-nowrap gap-2">
               <input
                 v-model="screenshotUrlInput"
                 type="url"
-                class="flex-1 px-3 py-2 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
+                class="w-full sm:flex-1 px-3 py-2 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
                 placeholder="URL screenshot..."
               />
               <input
                 v-model="screenshotCaptionInput"
                 type="text"
-                class="w-32 px-3 py-2 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
+                class="flex-1 sm:w-24 md:w-32 px-3 py-2 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
                 placeholder="Caption"
               />
               <button type="button" @click="addScreenshot" class="px-3 bg-dark-700 hover:bg-dark-600 rounded-lg">
@@ -594,7 +594,7 @@ const goBack = () => {
       </div>
 
       <!-- Tech Stack Card -->
-      <div class="bg-dark-900 border border-dark-800 rounded-2xl p-8">
+      <div class="bg-dark-900 border border-dark-800 rounded-xl sm:rounded-2xl p-4 sm:p-8">
         <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
           <div class="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
             <span class="text-yellow-400 font-bold">3</span>
@@ -653,7 +653,7 @@ const goBack = () => {
             </div>
             <div>
               <label class="block text-sm font-medium text-slate-300 mb-2">Icon</label>
-              <div class="grid grid-cols-6 gap-2">
+              <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
                 <button
                   v-for="ic in icons"
                   :key="ic.value"

@@ -252,12 +252,12 @@ onMounted(async () => {
           </div>
           
           <!-- Thumbnails -->
-          <div class="flex justify-center gap-4 overflow-x-auto pb-2">
+          <div class="flex justify-center gap-2 sm:gap-4 overflow-x-auto pb-2 px-2 -mx-2">
             <button
               v-for="(screenshot, index) in project.screenshots"
               :key="index"
               @click="currentScreenshot = index"
-              class="flex-shrink-0 w-32 h-20 rounded-lg overflow-hidden border-2 transition-all"
+              class="flex-shrink-0 w-20 h-14 sm:w-32 sm:h-20 rounded-lg overflow-hidden border-2 transition-all"
               :class="currentScreenshot === index ? 'border-primary' : 'border-transparent opacity-60 hover:opacity-100'"
             >
               <img 
