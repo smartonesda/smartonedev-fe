@@ -40,7 +40,7 @@ const navLinks = [
               <Instagram class="w-5 h-5" />
             </a>
             <a
-              href="https://wa.me/6281285285555"
+              href="https://wa.me/6281293920187"
               target="_blank"
               class="w-10 h-10 rounded-full bg-dark-800 flex items-center justify-center text-slate-400 hover:bg-green-500 hover:text-white transition-all"
             >
