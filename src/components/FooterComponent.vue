@@ -33,7 +33,7 @@ const navLinks = [
               <Github class="w-5 h-5" />
             </a>
             <a
-              href="https://instagram.com/rpl_smartonesda"
+              href="https://www.instagram.com/rpl_smkantartika1sda/"
               target="_blank"
               class="w-10 h-10 rounded-full bg-dark-800 flex items-center justify-center text-slate-400 hover:bg-accent-gold hover:text-white transition-all"
             >
