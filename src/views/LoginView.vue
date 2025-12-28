@@ -43,7 +43,7 @@ const togglePassword = () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-dark-950 flex items-center justify-center px-4 relative overflow-hidden">
+  <div class="min-h-dvh bg-dark-950 flex items-center justify-center px-4 relative overflow-hidden">
     <!-- Background Effects -->
     <div class="absolute inset-0">
       <div class="cyber-grid absolute inset-0 opacity-20"></div>
