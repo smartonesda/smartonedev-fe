@@ -516,16 +516,24 @@ const goBack = () => {
                   v-model="formData.image"
                   type="url"
                   class="w-full px-4 py-2.5 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
-                  placeholder="URL gambar..."
+                  placeholder="https://example.com/image.jpg"
                   @input="imagePreview = formData.image"
                 />
+                
+                <!-- OR Divider -->
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-px bg-dark-700"></div>
+                  <span class="text-xs text-slate-500 font-medium">ATAU</span>
+                  <div class="flex-1 h-px bg-dark-700"></div>
+                </div>
+                
                 <label 
-                  class="inline-flex items-center gap-2 px-4 py-2.5 bg-dark-700 hover:bg-dark-600 text-white rounded-lg cursor-pointer transition-colors"
+                  class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 rounded-lg cursor-pointer transition-colors"
                   :class="{ 'opacity-50': isUploading }"
                 >
                   <Loader2 v-if="isUploading" class="w-4 h-4 animate-spin" />
                   <Upload v-else class="w-4 h-4" />
-                  <span>{{ isUploading ? 'Uploading...' : 'Upload File' }}</span>
+                  <span class="font-medium">{{ isUploading ? 'Uploading...' : 'Upload File' }}</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -566,29 +574,57 @@ const goBack = () => {
             </div>
             
             <!-- Add Screenshot -->
-            <div class="flex flex-wrap sm:flex-nowrap gap-2">
-              <input
-                v-model="screenshotUrlInput"
-                type="url"
-                class="w-full sm:flex-1 px-3 py-2 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
-                placeholder="URL screenshot..."
-              />
-              <input
-                v-model="screenshotCaptionInput"
-                type="text"
-                class="flex-1 sm:w-24 md:w-32 px-3 py-2 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
-                placeholder="Caption"
-              />
-              <button type="button" @click="addScreenshot" class="px-3 bg-dark-700 hover:bg-dark-600 rounded-lg">
-                <Plus class="w-5 h-5 text-white" />
-              </button>
-              <label class="flex items-center gap-1 px-3 bg-primary/20 hover:bg-primary/30 text-primary rounded-lg cursor-pointer transition-colors">
-                <Loader2 v-if="isUploadingScreenshot" class="w-4 h-4 animate-spin" />
-                <Upload v-else class="w-4 h-4" />
-                <input type="file" accept="image/*" class="hidden" @change="uploadScreenshot" :disabled="isUploadingScreenshot" />
-              </label>
+            <div class="bg-dark-800/50 border border-dark-700 rounded-xl p-3 sm:p-4 space-y-3 overflow-hidden">
+              <p class="text-sm text-slate-400">Tambah screenshot baru:</p>
+              
+              <!-- Step 1: Caption (always visible) -->
+              <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1.5">Caption</label>
+                <input
+                  v-model="screenshotCaptionInput"
+                  type="text"
+                  class="w-full px-3 py-2.5 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
+                  placeholder="Contoh: Home Screen, Login Page"
+                />
+              </div>
+              
+              <!-- Step 2: Image Source Options -->
+              <div class="space-y-3">
+                <!-- Option 1: URL -->
+                <div class="space-y-1.5">
+                  <label class="block text-xs font-medium text-slate-400">Opsi 1: Link URL</label>
+                  <div class="flex gap-2">
+                    <input
+                      v-model="screenshotUrlInput"
+                      type="url"
+                      class="flex-1 min-w-0 px-3 py-2.5 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
+                      placeholder="https://..."
+                    />
+                    <button 
+                      type="button" 
+                      @click="addScreenshot" 
+                      class="flex-shrink-0 px-3 sm:px-4 py-2.5 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors"
+                      title="Tambah dari URL"
+                    >
+                      <Plus class="w-5 h-5 text-white" />
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Option 2: Upload -->
+                <div class="space-y-1.5">
+                  <label class="block text-xs font-medium text-slate-400">Opsi 2: Upload File</label>
+                  <label class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 rounded-lg cursor-pointer transition-colors">
+                    <Loader2 v-if="isUploadingScreenshot" class="w-4 h-4 animate-spin" />
+                    <Upload v-else class="w-4 h-4" />
+                    <span class="font-medium text-sm">{{ isUploadingScreenshot ? 'Uploading...' : 'Pilih File' }}</span>
+                    <input type="file" accept="image/*" class="hidden" @change="uploadScreenshot" :disabled="isUploadingScreenshot" />
+                  </label>
+                </div>
+              </div>
+              
+              <p v-if="screenshotError" class="text-red-400 text-xs">{{ screenshotError }}</p>
             </div>
-            <p v-if="screenshotError" class="text-red-400 text-xs mt-1">{{ screenshotError }}</p>
           </div>
         </div>
       </div>
@@ -611,10 +647,10 @@ const goBack = () => {
                 v-model="techInput"
                 type="text"
                 @keydown.enter.prevent="addTech"
-                class="flex-1 px-4 py-2.5 bg-dark-800 border border-dark-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-primary"
+                class="flex-1 min-w-0 px-4 py-2.5 bg-dark-800 border border-dark-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-primary"
                 placeholder="React, Laravel, Flutter..."
               />
-              <button type="button" @click="addTech" class="px-4 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors">
+              <button type="button" @click="addTech" class="flex-shrink-0 px-3 sm:px-4 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors">
                 <Plus class="w-5 h-5 text-white" />
               </button>
             </div>
@@ -717,7 +753,7 @@ const goBack = () => {
       </div>
 
       <!-- Story & Team Card (Step 4) -->
-      <div class="bg-dark-900 border border-dark-800 rounded-2xl p-8">
+      <div class="bg-dark-900 border border-dark-800 rounded-xl sm:rounded-2xl p-4 sm:p-8">
         <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
           <div class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
             <span class="text-purple-400 font-bold">4</span>
@@ -768,17 +804,17 @@ const goBack = () => {
             </label>
             
             <!-- Team Grid -->
-            <div v-if="formData.team?.length > 0" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            <div v-if="formData.team?.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 mb-4">
               <div 
                 v-for="(member, idx) in formData.team" 
                 :key="idx"
-                class="relative group bg-dark-800 border border-dark-700 rounded-lg p-3 text-center"
+                class="relative group bg-dark-800 border border-dark-700 rounded-lg p-2 sm:p-3 text-center"
               >
-                <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center text-white font-bold text-lg">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-1.5 sm:mb-2 rounded-full bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center text-white font-bold text-sm sm:text-lg">
                   {{ member.name.charAt(0).toUpperCase() }}
                 </div>
-                <p class="text-sm text-white font-medium truncate">{{ member.name }}</p>
-                <p class="text-xs text-slate-400 truncate">{{ member.role }}</p>
+                <p class="text-xs sm:text-sm text-white font-medium truncate">{{ member.name }}</p>
+                <p class="text-[10px] sm:text-xs text-slate-400 truncate">{{ member.role }}</p>
                 <button
                   type="button"
                   @click="removeTeamMember(idx)"
@@ -790,21 +826,28 @@ const goBack = () => {
             </div>
             
             <!-- Add Team Member -->
-            <div class="flex gap-2">
-              <input
-                v-model="teamNameInput"
-                type="text"
-                class="flex-1 px-3 py-2 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
-                placeholder="Nama anggota..."
-              />
-              <input
-                v-model="teamRoleInput"
-                type="text"
-                class="w-40 px-3 py-2 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
-                placeholder="Role (opsional)"
-              />
-              <button type="button" @click="addTeamMember" class="px-4 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors">
-                <Plus class="w-5 h-5 text-white" />
+            <div class="space-y-2">
+              <div class="flex flex-col sm:flex-row gap-2">
+                <input
+                  v-model="teamNameInput"
+                  type="text"
+                  class="flex-1 min-w-0 px-3 py-2.5 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
+                  placeholder="Nama anggota..."
+                />
+                <input
+                  v-model="teamRoleInput"
+                  type="text"
+                  class="w-full sm:w-32 px-3 py-2.5 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
+                  placeholder="Role (opsional)"
+                />
+              </div>
+              <button 
+                type="button" 
+                @click="addTeamMember" 
+                class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 rounded-lg transition-colors"
+              >
+                <Plus class="w-4 h-4" />
+                <span class="font-medium text-sm">Tambah Anggota</span>
               </button>
             </div>
           </div>
@@ -812,7 +855,7 @@ const goBack = () => {
       </div>
 
       <!-- Timeline Card (Step 5) -->
-      <div class="bg-dark-900 border border-dark-800 rounded-2xl p-8">
+      <div class="bg-dark-900 border border-dark-800 rounded-xl sm:rounded-2xl p-4 sm:p-8">
         <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
           <div class="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
             <span class="text-cyan-400 font-bold">5</span>
@@ -826,19 +869,19 @@ const goBack = () => {
             <div 
               v-for="(event, idx) in formData.timeline" 
               :key="idx"
-              class="relative flex gap-4 bg-dark-800 border border-dark-700 rounded-lg p-4 group"
+              class="relative flex gap-3 sm:gap-4 bg-dark-800 border border-dark-700 rounded-lg p-3 sm:p-4 group"
             >
               <div class="flex-shrink-0">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-xs sm:text-sm">
                   {{ idx + 1 }}
                 </div>
               </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 mb-1">
+              <div class="flex-1 min-w-0 overflow-hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
                   <span class="text-xs text-cyan-400 font-medium">{{ event.date }}</span>
-                  <span class="text-white font-medium">{{ event.event }}</span>
+                  <span class="text-white font-medium text-sm sm:text-base truncate">{{ event.event }}</span>
                 </div>
-                <p v-if="event.description" class="text-sm text-slate-400">{{ event.description }}</p>
+                <p v-if="event.description" class="text-xs sm:text-sm text-slate-400 line-clamp-2">{{ event.description }}</p>
               </div>
               <button
                 type="button"
@@ -851,27 +894,34 @@ const goBack = () => {
           </div>
           
           <!-- Add Timeline Event -->
-          <div class="flex gap-2">
-            <input
-              v-model="timelineDateInput"
-              type="text"
-              class="w-32 px-3 py-2 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
-              placeholder="Okt 2024"
-            />
-            <input
-              v-model="timelineEventInput"
-              type="text"
-              class="flex-1 px-3 py-2 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
-              placeholder="Event (mis: Development)"
-            />
+          <div class="space-y-2">
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input
+                v-model="timelineDateInput"
+                type="text"
+                class="w-full sm:w-28 px-3 py-2.5 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
+                placeholder="Okt 2024"
+              />
+              <input
+                v-model="timelineEventInput"
+                type="text"
+                class="flex-1 min-w-0 px-3 py-2.5 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
+                placeholder="Event (mis: Development)"
+              />
+            </div>
             <input
               v-model="timelineDescInput"
               type="text"
-              class="flex-1 px-3 py-2 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
+              class="w-full px-3 py-2.5 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-primary"
               placeholder="Deskripsi (opsional)"
             />
-            <button type="button" @click="addTimelineEvent" class="px-4 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors">
-              <Plus class="w-5 h-5 text-white" />
+            <button 
+              type="button" 
+              @click="addTimelineEvent" 
+              class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 border border-cyan-500/30 rounded-lg transition-colors"
+            >
+              <Plus class="w-4 h-4" />
+              <span class="font-medium text-sm">Tambah Event</span>
             </button>
           </div>
         </div>
