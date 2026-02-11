@@ -1,10 +1,11 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { Eye, EyeOff, Lock, User, AlertCircle, Loader2 } from 'lucide-vue-next'
+import { Eye, EyeOff, Lock, User, AlertCircle, Loader2, ShieldAlert } from 'lucide-vue-next'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 
 const username = ref('')
@@ -12,15 +13,30 @@ const password = ref('')
 const showPassword = ref(false)
 const isLoading = ref(false)
 const error = ref('')
+const sessionExpiredMsg = ref('')
 
 const isFormValid = computed(() => {
   return username.value.trim() !== '' && password.value.trim() !== ''
+})
+
+// Check if redirected due to session expiry
+onMounted(() => {
+  if (route.query.sessionExpired === 'true') {
+    sessionExpiredMsg.value = 'Sesi Anda telah berakhir. Silakan login kembali.'
+    // Clean the URL query param
+    router.replace({ name: 'login', query: {} })
+    // Auto-dismiss after 8 seconds
+    setTimeout(() => {
+      sessionExpiredMsg.value = ''
+    }, 8000)
+  }
 })
 
 const handleLogin = async () => {
   if (!isFormValid.value) return
   
   error.value = ''
+  sessionExpiredMsg.value = ''
   isLoading.value = true
   
   try {
@@ -67,6 +83,20 @@ const togglePassword = () => {
       
       <!-- Login Card -->
       <div class="bg-dark-900/80 backdrop-blur-xl border border-dark-700 rounded-2xl p-8 shadow-2xl">
+        <!-- Session Expired Alert -->
+        <Transition name="toast">
+          <div 
+            v-if="sessionExpiredMsg"
+            class="mb-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg flex items-center gap-3 text-amber-400"
+          >
+            <ShieldAlert class="w-5 h-5 flex-shrink-0" />
+            <span class="text-sm font-medium">{{ sessionExpiredMsg }}</span>
+            <button @click="sessionExpiredMsg = ''" class="ml-auto hover:text-amber-300 transition-colors">
+              <span class="text-lg leading-none">&times;</span>
+            </button>
+          </div>
+        </Transition>
+
         <!-- Error Alert -->
         <div 
           v-if="error"

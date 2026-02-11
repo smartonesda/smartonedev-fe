@@ -4,6 +4,9 @@ import axios from 'axios'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 
+// Track if interceptor is already set up to avoid duplicates
+let interceptorSetup = false
+
 export const useAuthStore = defineStore('auth', () => {
     const token = ref(localStorage.getItem('token') || null)
     const user = ref(JSON.parse(localStorage.getItem('user') || 'null'))
@@ -56,6 +59,35 @@ export const useAuthStore = defineStore('auth', () => {
         return false
     }
 
+    // Setup axios interceptor to handle 401 (session expired) globally
+    const setupInterceptors = (router) => {
+        if (interceptorSetup) return
+        interceptorSetup = true
+
+        axios.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                if (error.response?.status === 401 && token.value) {
+                    // Session expired — clear auth and redirect to login
+                    token.value = null
+                    user.value = null
+                    localStorage.removeItem('token')
+                    localStorage.removeItem('user')
+                    delete axios.defaults.headers.common['Authorization']
+
+                    // Only redirect if not already on login page
+                    if (router.currentRoute.value.name !== 'login') {
+                        router.push({
+                            name: 'login',
+                            query: { sessionExpired: 'true' }
+                        })
+                    }
+                }
+                return Promise.reject(error)
+            }
+        )
+    }
+
     // Initialize auth header on store creation
     checkAuth()
 
@@ -65,6 +97,7 @@ export const useAuthStore = defineStore('auth', () => {
         isAuthenticated,
         login,
         logout,
-        checkAuth
+        checkAuth,
+        setupInterceptors
     }
 })
