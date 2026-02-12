@@ -251,3 +251,12 @@ section {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
+
+/* Force AOS elements visible on mobile when AOS is disabled */
+@media (max-width: 767px) {
+  [data-aos] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
