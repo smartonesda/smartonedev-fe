@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
-// Views
+// Views — only HomeView is eagerly loaded (landing page)
 import HomeView from '@/views/HomeView.vue'
-import LoginView from '@/views/LoginView.vue'
-import DashboardView from '@/views/DashboardView.vue'
-import DashboardHome from '@/views/DashboardHome.vue'
-import GalleryManagement from '@/views/GalleryManagement.vue'
-import CategoryManagement from '@/views/CategoryManagement.vue'
+const LoginView = () => import('@/views/LoginView.vue')
+const DashboardView = () => import('@/views/DashboardView.vue')
+const DashboardHome = () => import('@/views/DashboardHome.vue')
+const GalleryManagement = () => import('@/views/GalleryManagement.vue')
+const CategoryManagement = () => import('@/views/CategoryManagement.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -65,7 +65,7 @@ const router = createRouter({
       path: '/project/:slug',
       name: 'project-detail',
       component: () => import('@/views/ProjectDetail.vue'),
-      meta: { title: 'Detail Project' }
+      meta: { title: 'Detail Project', transition: 'slide-right' }
     },
     // Catch-all redirect
     {
@@ -75,12 +75,23 @@ const router = createRouter({
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
-      return savedPosition
+      // Restore saved position after transition completes
+      return new Promise((resolve) => {
+        setTimeout(() => resolve(savedPosition), 350)
+      })
     }
     if (to.hash) {
-      return { el: to.hash, behavior: 'smooth' }
+      // Wait for async components to render before scrolling to hash
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({ el: to.hash, behavior: 'smooth' })
+        }, 400)
+      })
     }
-    return { top: 0, behavior: 'smooth' }
+    // Instant scroll to top — no smooth, so it doesn't fight with slide transition
+    return new Promise((resolve) => {
+      setTimeout(() => resolve({ top: 0 }), 350)
+    })
   }
 })
 

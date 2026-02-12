@@ -2,12 +2,14 @@
 import NavbarComponent from '@/components/NavbarComponent.vue'
 import HeroSection from '@/components/HeroSection.vue'
 import TechMarquee from '@/components/TechMarquee.vue'
-import AboutSection from '@/components/AboutSection.vue'
-import GallerySection from '@/components/GallerySection.vue'
-import CollaborationSection from '@/components/CollaborationSection.vue'
-import FooterComponent from '@/components/FooterComponent.vue'
-import { ref, onMounted } from 'vue'
+import { defineAsyncComponent, ref, onMounted } from 'vue'
 import { useGalleryStore } from '@/stores/gallery'
+
+// Below-fold sections — loaded asynchronously to speed up initial render
+const AboutSection = defineAsyncComponent(() => import('@/components/AboutSection.vue'))
+const GallerySection = defineAsyncComponent(() => import('@/components/GallerySection.vue'))
+const CollaborationSection = defineAsyncComponent(() => import('@/components/CollaborationSection.vue'))
+const FooterComponent = defineAsyncComponent(() => import('@/components/FooterComponent.vue'))
 
 const galleryStore = useGalleryStore()
 const isLoading = ref(true)

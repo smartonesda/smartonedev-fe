@@ -12,11 +12,12 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 
-// Initialize AOS
+// Initialize AOS — disabled on mobile to prevent "missing sections" issue
 AOS.init({
-    duration: 800,
+    duration: 600,
     once: true,
-    offset: 100,
+    offset: 50,
+    disable: () => window.innerWidth < 768,
 })
 
 app.mount('#app')

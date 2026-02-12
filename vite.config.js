@@ -17,4 +17,15 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-vue': ['vue', 'vue-router', 'pinia'],
+          'vendor-utils': ['axios', 'aos'],
+          'vendor-icons': ['lucide-vue-next'],
+        },
+      },
+    },
+  },
 })
