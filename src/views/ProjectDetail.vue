@@ -254,50 +254,77 @@ onMounted(async () => {
 
         <!-- Screenshots -->
         <section v-if="project.screenshots?.length > 0" class="mb-20">
-          <h2 class="text-3xl font-bold text-white mb-12 flex items-center gap-3">
+          <h2 class="text-3xl font-bold text-white mb-8 flex items-center gap-3">
             <span class="w-12 h-12 rounded-xl bg-accent-gold/20 flex items-center justify-center">
               <Maximize2 class="w-6 h-6 text-accent-gold" />
             </span>
             Screenshots
           </h2>
 
-          <!-- Main Screenshot -->
-          <div class="relative rounded-2xl overflow-hidden mb-4 cursor-pointer group"
-            @click="openLightbox(currentScreenshot)">
-            <img v-if="project.screenshots[currentScreenshot]?.url" :src="project.screenshots[currentScreenshot].url"
-              :alt="project.screenshots[currentScreenshot].caption" class="w-full h-auto max-h-[600px] object-cover" />
-            <div
-              class="absolute inset-0 bg-dark-950/0 group-hover:bg-dark-950/50 transition-colors flex items-center justify-center">
-              <span
-                class="opacity-0 group-hover:opacity-100 bg-white/90 text-dark-950 px-4 py-2 rounded-full font-bold transition-opacity">
-                <Maximize2 class="w-5 h-5 inline mr-2" />
-                Perbesar
+          <!-- Slider wrapper — centered & max-width bounded -->
+          <div class="mx-auto max-w-3xl">
+
+            <!-- Main Image + flanking arrows -->
+            <div class="relative rounded-2xl overflow-hidden bg-dark-900 border border-dark-800 group cursor-pointer"
+              @click="openLightbox(currentScreenshot)">
+              <img
+                v-if="project.screenshots[currentScreenshot]?.url"
+                :src="project.screenshots[currentScreenshot].url"
+                :alt="project.screenshots[currentScreenshot]?.caption"
+                class="w-full h-56 sm:h-72 object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+
+              <!-- Perbesar overlay -->
+              <div class="absolute inset-0 bg-dark-950/0 group-hover:bg-dark-950/50 transition-colors flex items-center justify-center">
+                <span class="opacity-0 group-hover:opacity-100 bg-white/90 text-dark-950 px-4 py-2 rounded-full font-bold text-sm transition-opacity flex items-center gap-2">
+                  <Maximize2 class="w-4 h-4" /> Perbesar
+                </span>
+              </div>
+
+              <!-- Prev arrow — overlaid left -->
+              <button
+                v-if="project.screenshots.length > 1"
+                @click.stop="prevScreenshot"
+                class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-dark-950/70 backdrop-blur-sm border border-white/10 text-white hover:bg-primary transition-all duration-200 z-10"
+              >
+                <ChevronLeft class="w-5 h-5" />
+              </button>
+
+              <!-- Next arrow — overlaid right -->
+              <button
+                v-if="project.screenshots.length > 1"
+                @click.stop="nextScreenshot"
+                class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-dark-950/70 backdrop-blur-sm border border-white/10 text-white hover:bg-primary transition-all duration-200 z-10"
+              >
+                <ChevronRight class="w-5 h-5" />
+              </button>
+
+              <!-- Counter pill -->
+              <span class="absolute bottom-3 right-3 text-xs font-bold text-white bg-dark-950/70 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/10">
+                {{ currentScreenshot + 1 }} / {{ project.screenshots.length }}
               </span>
             </div>
-          </div>
 
-          <!-- Thumbnails -->
-          <div class="flex justify-center gap-2 sm:gap-4 overflow-x-auto pb-2 px-2 -mx-2">
-            <button v-for="(screenshot, index) in project.screenshots" :key="index" @click="currentScreenshot = index"
-              class="flex-shrink-0 w-20 h-14 sm:w-32 sm:h-20 rounded-lg overflow-hidden border-2 transition-all"
-              :class="currentScreenshot === index ? 'border-primary' : 'border-transparent opacity-60 hover:opacity-100'">
-              <img :src="screenshot.url" :alt="screenshot.caption" class="w-full h-full object-cover" />
-            </button>
-          </div>
+            <!-- Caption -->
+            <p class="text-center text-slate-400 text-sm mt-3 min-h-[1.25rem]">
+              {{ project.screenshots[currentScreenshot]?.caption || '' }}
+            </p>
 
-          <!-- Caption -->
-          <p class="text-center text-slate-400 mt-4">
-            {{ project.screenshots[currentScreenshot]?.caption }}
-          </p>
+            <!-- Thumbnails — fixed-size, centered, no overflow -->
+            <div class="mt-4 flex items-center justify-center gap-2 flex-wrap">
+              <button
+                v-for="(screenshot, index) in project.screenshots"
+                :key="index"
+                @click="currentScreenshot = index"
+                class="w-16 h-11 sm:w-20 sm:h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-200"
+                :class="currentScreenshot === index
+                  ? 'border-primary scale-105 shadow-lg shadow-primary/30'
+                  : 'border-transparent opacity-50 hover:opacity-80'"
+              >
+                <img :src="screenshot.url" :alt="screenshot.caption" class="w-full h-full object-cover" />
+              </button>
+            </div>
 
-          <!-- Nav Arrows -->
-          <div class="flex justify-center gap-4 mt-6">
-            <button @click="prevScreenshot" class="p-3 bg-dark-800 hover:bg-dark-700 rounded-full transition-colors">
-              <ChevronLeft class="w-6 h-6 text-white" />
-            </button>
-            <button @click="nextScreenshot" class="p-3 bg-dark-800 hover:bg-dark-700 rounded-full transition-colors">
-              <ChevronRight class="w-6 h-6 text-white" />
-            </button>
           </div>
         </section>
 
