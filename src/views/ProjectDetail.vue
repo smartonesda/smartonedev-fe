@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import axios from 'axios'
 import {
   ArrowLeft,
   Github,
@@ -22,6 +23,8 @@ import {
   Maximize2,
   X
 } from 'lucide-vue-next'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -94,11 +97,34 @@ const closeLightbox = () => {
 }
 
 onMounted(async () => {
-  // Get project data from sessionStorage (passed from GallerySection)
+  const slug = route.params.slug
+
+  // 1. Try sessionStorage first (fast path from GallerySection navigation)
   const storedProject = sessionStorage.getItem('currentProject')
   if (storedProject) {
-    project.value = JSON.parse(storedProject)
+    const parsed = JSON.parse(storedProject)
+    // Verify the stored project matches the current slug
+    if (parsed.slug === slug || String(parsed.id) === slug) {
+      project.value = parsed
+      isLoading.value = false
+      return
+    }
   }
+
+  // 2. Fallback: fetch from API (handles direct URL access / hard reload)
+  try {
+    const response = await axios.get(`${API_URL}/gallery`)
+    const projects = response.data.data || response.data || []
+    const found = projects.find(p => p.slug === slug || String(p.id) === slug)
+    if (found) {
+      project.value = found
+      // Cache it in sessionStorage for subsequent navigations
+      sessionStorage.setItem('currentProject', JSON.stringify(found))
+    }
+  } catch (err) {
+    console.error('Failed to fetch project by slug:', err.message)
+  }
+
   isLoading.value = false
 })
 </script>
