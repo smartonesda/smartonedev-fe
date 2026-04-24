@@ -18,7 +18,12 @@ import {
   Cpu,
   Layout,
   BookOpen,
-  Image as ImageIcon
+  Image as ImageIcon,
+  KeyRound,
+  Eye,
+  EyeOff,
+  Copy,
+  Check
 } from 'lucide-vue-next'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
@@ -64,7 +69,8 @@ const formData = ref({
   bg_gradient: 'from-red-600 to-red-900',
   icon: 'globe',
   github_url: '',
-  demo_url: ''
+  demo_url: '',
+  login_credentials: []
 })
 
 const techInput = ref('')
@@ -79,6 +85,14 @@ const teamRoleInput = ref('')
 const timelineDateInput = ref('')
 const timelineEventInput = ref('')
 const timelineDescInput = ref('')
+
+// Credential inputs
+const credLabelInput = ref('')
+const credUsernameInput = ref('')
+const credPasswordInput = ref('')
+const credNoteInput = ref('')
+const showCredPassword = ref(false)
+const copiedField = ref(null)
 
 // Categories now from store
 const categories = computed(() => categoryStore.categories.map(c => c.name))
@@ -119,7 +133,8 @@ onMounted(async () => {
           screenshots: Array.isArray(project.screenshots) ? [...project.screenshots] : [],
           story: project.story || { problem: '', solution: '', impact: '' },
           timeline: Array.isArray(project.timeline) ? [...project.timeline] : [],
-          team: Array.isArray(project.team) ? [...project.team] : []
+          team: Array.isArray(project.team) ? [...project.team] : [],
+          login_credentials: Array.isArray(project.login_credentials) ? [...project.login_credentials] : []
         }
         imagePreview.value = project.image || ''
         originalImage.value = project.image || '' // Store original for comparison
@@ -371,6 +386,39 @@ const handleSubmit = async () => {
 
 const goBack = () => {
   router.push('/dashboard/gallery')
+}
+
+// ──────────────────────────────────────────
+// Login Credentials functions
+// ──────────────────────────────────────────
+const addCredential = () => {
+  if (!credUsernameInput.value.trim() || !credPasswordInput.value.trim()) return
+  if (!formData.value.login_credentials) formData.value.login_credentials = []
+  formData.value.login_credentials.push({
+    label: credLabelInput.value.trim() || 'Demo Account',
+    username: credUsernameInput.value.trim(),
+    password: credPasswordInput.value.trim(),
+    note: credNoteInput.value.trim()
+  })
+  credLabelInput.value = ''
+  credUsernameInput.value = ''
+  credPasswordInput.value = ''
+  credNoteInput.value = ''
+  showCredPassword.value = false
+}
+
+const removeCredential = (index) => {
+  formData.value.login_credentials.splice(index, 1)
+}
+
+const copyToClipboard = async (text, fieldKey) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    copiedField.value = fieldKey
+    setTimeout(() => { copiedField.value = null }, 2000)
+  } catch (e) {
+    console.error('Copy failed:', e)
+  }
 }
 </script>
 
@@ -922,6 +970,141 @@ const goBack = () => {
             >
               <Plus class="w-4 h-4" />
               <span class="font-medium text-sm">Tambah Event</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Login Credentials Card (Step 6) -->
+      <div class="bg-dark-900 border border-dark-800 rounded-xl sm:rounded-2xl p-4 sm:p-8">
+        <h2 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+            <span class="text-amber-400 font-bold">6</span>
+          </div>
+          Demo Login Credentials
+        </h2>
+        <p class="text-slate-500 text-sm mb-6 ml-10">
+          Opsional — isi jika demo live membutuhkan login. Akan tampil di halaman detail project.
+        </p>
+
+        <div class="space-y-4">
+          <!-- Credentials List -->
+          <div v-if="formData.login_credentials?.length > 0" class="space-y-3">
+            <div
+              v-for="(cred, idx) in formData.login_credentials"
+              :key="idx"
+              class="relative group flex flex-col gap-2 bg-dark-800 border border-amber-900/30 rounded-xl p-4"
+            >
+              <!-- Label Badge -->
+              <div class="flex items-center justify-between">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/15 border border-amber-500/30 text-amber-400 rounded-full text-xs font-bold uppercase tracking-wide">
+                  <KeyRound class="w-3 h-3" />
+                  {{ cred.label }}
+                </span>
+                <button
+                  type="button"
+                  @click="removeCredential(idx)"
+                  class="p-1.5 bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                >
+                  <X class="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <!-- Username -->
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-500 w-20 shrink-0">Username</span>
+                <code class="flex-1 text-sm text-slate-200 font-mono bg-dark-900/60 px-2.5 py-1 rounded-lg truncate">
+                  {{ cred.username }}
+                </code>
+              </div>
+              <!-- Password -->
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-500 w-20 shrink-0">Password</span>
+                <code class="flex-1 text-sm text-slate-200 font-mono bg-dark-900/60 px-2.5 py-1 rounded-lg truncate">
+                  {{ cred.password }}
+                </code>
+              </div>
+              <!-- Note -->
+              <p v-if="cred.note" class="text-xs text-slate-400 italic mt-1">📝 {{ cred.note }}</p>
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div
+            v-else
+            class="flex flex-col items-center justify-center py-8 border-2 border-dashed border-dark-700 rounded-xl text-slate-500"
+          >
+            <KeyRound class="w-10 h-10 mb-2 opacity-30" />
+            <p class="text-sm">Belum ada kredensial demo</p>
+          </div>
+
+          <!-- Add Credential Form -->
+          <div class="bg-dark-800/50 border border-dark-700 rounded-xl p-4 space-y-3">
+            <p class="text-sm font-medium text-slate-300">Tambah kredensial baru:</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <!-- Label -->
+              <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1.5">Label / Role</label>
+                <input
+                  v-model="credLabelInput"
+                  type="text"
+                  class="w-full px-3 py-2.5 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+                  placeholder="Admin, Guest, User..."
+                />
+              </div>
+              <!-- Note -->
+              <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1.5">Catatan (opsional)</label>
+                <input
+                  v-model="credNoteInput"
+                  type="text"
+                  class="w-full px-3 py-2.5 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+                  placeholder="Akses penuh, hanya baca..."
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <!-- Username -->
+              <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1.5">Username / Email *</label>
+                <input
+                  v-model="credUsernameInput"
+                  type="text"
+                  class="w-full px-3 py-2.5 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+                  placeholder="admin@demo.com"
+                />
+              </div>
+              <!-- Password -->
+              <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1.5">Password *</label>
+                <div class="relative">
+                  <input
+                    v-model="credPasswordInput"
+                    :type="showCredPassword ? 'text' : 'password'"
+                    class="w-full px-3 py-2.5 pr-10 bg-dark-800 border border-dark-700 rounded-lg text-white text-sm placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors"
+                    placeholder="password123"
+                  />
+                  <button
+                    type="button"
+                    @click="showCredPassword = !showCredPassword"
+                    class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                  >
+                    <Eye v-if="!showCredPassword" class="w-4 h-4" />
+                    <EyeOff v-else class="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              @click="addCredential"
+              :disabled="!credUsernameInput.trim() || !credPasswordInput.trim()"
+              class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border border-amber-500/30 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <Plus class="w-4 h-4" />
+              <span class="font-medium text-sm">Tambah Kredensial</span>
             </button>
           </div>
         </div>

@@ -21,7 +21,12 @@ import {
   Layout,
   BookOpen,
   Maximize2,
-  X
+  X,
+  KeyRound,
+  Eye,
+  EyeOff,
+  Copy,
+  Check
 } from 'lucide-vue-next'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
@@ -33,6 +38,32 @@ const project = ref(null)
 const isLoading = ref(true)
 const currentScreenshot = ref(0)
 const isLightboxOpen = ref(false)
+
+// Credentials state
+const showPasswords = ref({})
+const copiedField = ref(null)
+
+const toggleShowPassword = (index) => {
+  showPasswords.value[index] = !showPasswords.value[index]
+}
+
+const copyToClipboard = async (text, fieldKey) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    copiedField.value = fieldKey
+    setTimeout(() => { copiedField.value = null }, 2000)
+  } catch (e) {
+    // Fallback for older browsers
+    const textarea = document.createElement('textarea')
+    textarea.value = text
+    document.body.appendChild(textarea)
+    textarea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textarea)
+    copiedField.value = fieldKey
+    setTimeout(() => { copiedField.value = null }, 2000)
+  }
+}
 
 const iconMap = {
   'globe': Globe,
@@ -261,46 +292,40 @@ onMounted(async () => {
             Screenshots
           </h2>
 
-          <!-- Slider wrapper — centered & max-width bounded -->
-          <div class="mx-auto max-w-3xl">
+          <!-- Slider wrapper — full width, responsive -->
+          <div class="max-w-3xl m-auto">
 
             <!-- Main Image + flanking arrows -->
             <div class="relative rounded-2xl overflow-hidden bg-dark-900 border border-dark-800 group cursor-pointer"
               @click="openLightbox(currentScreenshot)">
-              <img
-                v-if="project.screenshots[currentScreenshot]?.url"
-                :src="project.screenshots[currentScreenshot].url"
+              <img v-if="project.screenshots[currentScreenshot]?.url" :src="project.screenshots[currentScreenshot].url"
                 :alt="project.screenshots[currentScreenshot]?.caption"
-                class="w-full h-56 sm:h-72 object-cover transition-transform duration-500 group-hover:scale-105"
-              />
+                class="w-full aspect-16/9 object-cover transition-transform duration-500 group-hover:scale-[1.02]" />
 
               <!-- Perbesar overlay -->
-              <div class="absolute inset-0 bg-dark-950/0 group-hover:bg-dark-950/50 transition-colors flex items-center justify-center">
-                <span class="opacity-0 group-hover:opacity-100 bg-white/90 text-dark-950 px-4 py-2 rounded-full font-bold text-sm transition-opacity flex items-center gap-2">
+              <div
+                class="absolute inset-0 bg-dark-950/0 group-hover:bg-dark-950/50 transition-colors flex items-center justify-center">
+                <span
+                  class="opacity-0 group-hover:opacity-100 bg-white/90 text-dark-950 px-4 py-2 rounded-full font-bold text-sm transition-opacity flex items-center gap-2">
                   <Maximize2 class="w-4 h-4" /> Perbesar
                 </span>
               </div>
 
               <!-- Prev arrow — overlaid left -->
-              <button
-                v-if="project.screenshots.length > 1"
-                @click.stop="prevScreenshot"
-                class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-dark-950/70 backdrop-blur-sm border border-white/10 text-white hover:bg-primary transition-all duration-200 z-10"
-              >
+              <button v-if="project.screenshots.length > 1" @click.stop="prevScreenshot"
+                class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-dark-950/70 backdrop-blur-sm border border-white/10 text-white hover:bg-primary transition-all duration-200 z-10">
                 <ChevronLeft class="w-5 h-5" />
               </button>
 
               <!-- Next arrow — overlaid right -->
-              <button
-                v-if="project.screenshots.length > 1"
-                @click.stop="nextScreenshot"
-                class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-dark-950/70 backdrop-blur-sm border border-white/10 text-white hover:bg-primary transition-all duration-200 z-10"
-              >
+              <button v-if="project.screenshots.length > 1" @click.stop="nextScreenshot"
+                class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-dark-950/70 backdrop-blur-sm border border-white/10 text-white hover:bg-primary transition-all duration-200 z-10">
                 <ChevronRight class="w-5 h-5" />
               </button>
 
               <!-- Counter pill -->
-              <span class="absolute bottom-3 right-3 text-xs font-bold text-white bg-dark-950/70 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/10">
+              <span
+                class="absolute bottom-3 right-3 text-xs font-bold text-white bg-dark-950/70 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/10">
                 {{ currentScreenshot + 1 }} / {{ project.screenshots.length }}
               </span>
             </div>
@@ -312,15 +337,11 @@ onMounted(async () => {
 
             <!-- Thumbnails — fixed-size, centered, no overflow -->
             <div class="mt-4 flex items-center justify-center gap-2 flex-wrap">
-              <button
-                v-for="(screenshot, index) in project.screenshots"
-                :key="index"
-                @click="currentScreenshot = index"
+              <button v-for="(screenshot, index) in project.screenshots" :key="index" @click="currentScreenshot = index"
                 class="w-16 h-11 sm:w-20 sm:h-14 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-200"
                 :class="currentScreenshot === index
                   ? 'border-primary scale-105 shadow-lg shadow-primary/30'
-                  : 'border-transparent opacity-50 hover:opacity-80'"
-              >
+                  : 'border-transparent opacity-50 hover:opacity-80'">
                 <img :src="screenshot.url" :alt="screenshot.caption" class="w-full h-full object-cover" />
               </button>
             </div>
@@ -406,6 +427,85 @@ onMounted(async () => {
                   Lihat Demo Live
                 </a>
               </div>
+            </section>
+
+            <!-- Demo Login Credentials -->
+            <section v-if="project.login_credentials?.length > 0"
+              class="bg-dark-900 border border-amber-900/40 rounded-2xl p-8 relative overflow-hidden">
+              <!-- Decorative glow -->
+              <div class="absolute top-0 right-0 w-40 h-40 bg-amber-500/5 rounded-full blur-3xl pointer-events-none">
+              </div>
+
+              <h2 class="text-xl font-bold text-white mb-1 flex items-center gap-3">
+                <span class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                  <KeyRound class="w-5 h-5 text-amber-400" />
+                </span>
+                Demo Login
+              </h2>
+              <p class="text-slate-500 text-xs mb-6 ml-13">Gunakan akun berikut untuk mencoba demo</p>
+
+              <div class="space-y-4">
+                <div v-for="(cred, idx) in project.login_credentials" :key="idx"
+                  class="bg-dark-800 border border-dark-700 rounded-xl p-4 space-y-3">
+                  <!-- Label -->
+                  <div class="flex items-center gap-2">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/15 border border-amber-500/30 text-amber-400 rounded-full text-xs font-bold uppercase tracking-wider">
+                      <KeyRound class="w-3 h-3" />
+                      {{ cred.label }}
+                    </span>
+                    <span v-if="cred.note" class="text-xs text-slate-500 italic truncate">{{ cred.note }}</span>
+                  </div>
+
+                  <!-- Username row -->
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-500 w-16 shrink-0 font-medium">User</span>
+                    <div class="flex-1 flex items-center gap-1.5 min-w-0">
+                      <code
+                        class="flex-1 text-xs text-slate-200 font-mono bg-dark-900/70 px-2.5 py-1.5 rounded-lg truncate border border-dark-700">
+                        {{ cred.username }}
+                      </code>
+                      <button @click="copyToClipboard(cred.username, `user-${idx}`)"
+                        class="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg transition-all" :class="copiedField === `user-${idx}`
+                          ? 'bg-green-500/20 text-green-400'
+                          : 'bg-dark-700 hover:bg-amber-500/20 text-slate-400 hover:text-amber-400'"
+                        title="Copy username">
+                        <Check v-if="copiedField === `user-${idx}`" class="w-3.5 h-3.5" />
+                        <Copy v-else class="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Password row -->
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-500 w-16 shrink-0 font-medium">Pass</span>
+                    <div class="flex-1 flex items-center gap-1.5 min-w-0">
+                      <code
+                        class="flex-1 text-xs text-slate-200 font-mono bg-dark-900/70 px-2.5 py-1.5 rounded-lg truncate border border-dark-700">
+                        {{ showPasswords[idx] ? cred.password : '•'.repeat(Math.min(cred.password?.length || 8, 12)) }}
+                      </code>
+                      <!-- Toggle show -->
+                      <button @click="toggleShowPassword(idx)"
+                        class="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg bg-dark-700 hover:bg-dark-600 text-slate-400 hover:text-slate-200 transition-all"
+                        :title="showPasswords[idx] ? 'Sembunyikan' : 'Tampilkan'">
+                        <Eye v-if="!showPasswords[idx]" class="w-3.5 h-3.5" />
+                        <EyeOff v-else class="w-3.5 h-3.5" />
+                      </button>
+                      <!-- Copy -->
+                      <button @click="copyToClipboard(cred.password, `pass-${idx}`)"
+                        class="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg transition-all" :class="copiedField === `pass-${idx}`
+                          ? 'bg-green-500/20 text-green-400'
+                          : 'bg-dark-700 hover:bg-amber-500/20 text-slate-400 hover:text-amber-400'"
+                        title="Copy password">
+                        <Check v-if="copiedField === `pass-${idx}`" class="w-3.5 h-3.5" />
+                        <Copy v-else class="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
             </section>
           </div>
         </div>
