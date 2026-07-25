@@ -1,18 +1,28 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { Menu, X, Sparkles } from 'lucide-vue-next'
 
 const isScrolled = ref(false)
 const isMobileMenuOpen = ref(false)
+const route = useRoute()
+const router = useRouter()
 
-const navLinks = [
-  { href: '#beranda', label: 'Beranda' },
-  { href: '#tentang', label: 'Tentang' },
-  { href: '#karya', label: 'Karya' },
-  { href: '#kolaborasi', label: 'Kolaborasi' }
+// True kalau sedang di halaman home (/)
+const isHome = computed(() => route.path === '/')
+
+// Anchor links — kalau bukan di home, prefix jadi /#section
+const anchorLinks = [
+  { hash: 'beranda', label: 'Beranda' },
+  { hash: 'tentang', label: 'Tentang' },
+  { hash: 'karya', label: 'Karya' },
+  { hash: 'kolaborasi', label: 'Kolaborasi' },
 ]
 
+const anchorHref = (hash) => isHome.value ? `#${hash}` : `/#${hash}`
+
 const activeSection = ref('beranda')
+const isTrackerActive = computed(() => route.path === '/tracker')
 
 let ticking = false
 const handleScroll = () => {
@@ -21,7 +31,6 @@ const handleScroll = () => {
   requestAnimationFrame(() => {
     isScrolled.value = window.scrollY > 20
 
-    // Scroll spy
     const sections = document.querySelectorAll('section')
     sections.forEach(section => {
       const sectionTop = section.offsetTop
@@ -62,17 +71,29 @@ onUnmounted(() => {
   ]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
       <!-- Logo -->
-      <a href="#" class="flex items-center gap-2 group">
+      <a href="/" class="flex items-center gap-2 group">
         <img src="/assets/images/dark-removebg-preview.png" alt="SmartOneDev Logo" class="sm:w-20 w-16 object-contain"
           fetchpriority="high" />
       </a>
 
       <!-- Desktop Menu -->
       <div class="hidden md:flex items-center gap-8 font-medium">
-        <a v-for="link in navLinks" :key="link.href" :href="link.href" class="nav-link"
-          :class="{ active: activeSection === link.href.slice(1) }">
+        <a
+          v-for="link in anchorLinks"
+          :key="link.hash"
+          :href="anchorHref(link.hash)"
+          class="nav-link"
+          :class="{ active: isHome && activeSection === link.hash }"
+        >
           {{ link.label }}
         </a>
+        <RouterLink
+          to="/tracker"
+          class="nav-link"
+          :class="{ active: isTrackerActive }"
+        >
+          Tracker Lomba
+        </RouterLink>
         <a href="https://www.instagram.com/smkantartika1sda/?hl=id" target="_blank"
           class="bg-gradient-to-r from-primary to-accent-gold hover:opacity-90 text-white px-6 py-2.5 rounded-full font-bold transition-all shadow-lg shadow-primary/25 hover:shadow-primary/40 active:scale-95 flex items-center gap-2">
           <Sparkles class="w-4 h-4" />
@@ -90,11 +111,24 @@ onUnmounted(() => {
     <!-- Mobile Menu Dropdown -->
     <div v-show="isMobileMenuOpen"
       class="md:hidden absolute w-full bg-dark-900/95 backdrop-blur-xl border-b border-dark-800 p-4 flex flex-col gap-4 shadow-2xl">
-      <a v-for="link in navLinks" :key="link.href" :href="link.href" @click="closeMobileMenu"
+      <a
+        v-for="link in anchorLinks"
+        :key="link.hash"
+        :href="anchorHref(link.hash)"
+        @click="closeMobileMenu"
         class="text-white p-2 hover:bg-dark-800 rounded-lg"
-        :class="{ 'text-primary': activeSection === link.href.slice(1) }">
+        :class="{ 'text-primary': isHome && activeSection === link.hash }"
+      >
         {{ link.label }}
       </a>
+      <RouterLink
+        to="/tracker"
+        @click="closeMobileMenu"
+        class="text-white p-2 hover:bg-dark-800 rounded-lg"
+        :class="{ 'text-primary': isTrackerActive }"
+      >
+        Tracker Lomba
+      </RouterLink>
       <a href="https://www.instagram.com/smkantartika1sda/?hl=id" target="_blank"
         class="bg-gradient-to-r from-primary to-accent-gold hover:opacity-90 text-white px-6 py-2.5 rounded-full font-bold transition-all shadow-lg shadow-primary/25 hover:shadow-primary/40 active:scale-95 flex items-center gap-2 justify-center">
         <Sparkles class="w-4 h-4" />

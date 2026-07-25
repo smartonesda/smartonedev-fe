@@ -8,6 +8,7 @@ const DashboardView = () => import('@/views/DashboardView.vue')
 const DashboardHome = () => import('@/views/DashboardHome.vue')
 const GalleryManagement = () => import('@/views/GalleryManagement.vue')
 const CategoryManagement = () => import('@/views/CategoryManagement.vue')
+const TrackerLomba = () => import('@/views/TrackerLomba.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,6 +18,12 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       meta: { title: 'Beranda' }
+    },
+    {
+      path: '/tracker',
+      name: 'tracker-lomba',
+      component: TrackerLomba,
+      meta: { title: 'Tracker Lomba' }
     },
     {
       path: '/login',
@@ -75,20 +82,17 @@ const router = createRouter({
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
-      // Restore saved position after transition completes
       return new Promise((resolve) => {
         setTimeout(() => resolve(savedPosition), 350)
       })
     }
     if (to.hash) {
-      // Wait for async components to render before scrolling to hash
       return new Promise((resolve) => {
         setTimeout(() => {
           resolve({ el: to.hash, behavior: 'smooth' })
         }, 400)
       })
     }
-    // Instant scroll to top — no smooth, so it doesn't fight with slide transition
     return new Promise((resolve) => {
       setTimeout(() => resolve({ top: 0 }), 350)
     })
