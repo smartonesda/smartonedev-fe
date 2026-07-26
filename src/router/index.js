@@ -118,11 +118,6 @@ router.beforeEach((to, from, next) => {
     return
   }
 
-  // Update document title
-  document.title = to.meta.title
-    ? `${to.meta.title} | SmartOneDev`
-    : 'SmartOneDev'
-
   next()
 })
 

@@ -5,6 +5,7 @@ import TechMarquee from '@/components/TechMarquee.vue'
 import { defineAsyncComponent, ref, onMounted } from 'vue'
 import { useGalleryStore } from '@/stores/gallery'
 import { Bug } from 'lucide-vue-next'
+import { useSeoMeta } from '@/composables/useSeoMeta'
 
 // Below-fold sections — loaded asynchronously to speed up initial render
 const AboutSection = defineAsyncComponent(() => import('@/components/AboutSection.vue'))
@@ -16,6 +17,12 @@ const galleryStore = useGalleryStore()
 const isLoading = ref(true)
 
 const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdVzbUcWMzn6oMhFkY8yxCu8XxkEkRhgNsdujlG2yZIpBCBHw/viewform?usp=publish-editor'
+
+useSeoMeta({
+  title: 'Beranda',
+  description:
+    'SmartOneDev adalah wadah elit siswa Rekayasa Perangkat Lunak SMKS Antartika 1 Sidoarjo untuk showcase project, open source, dan kolaborasi.',
+})
 
 onMounted(async () => {
   isLoading.value = true

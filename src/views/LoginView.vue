@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { Eye, EyeOff, Lock, User, AlertCircle, Loader2, ShieldAlert } from 'lucide-vue-next'
+import { useSeoMeta } from '@/composables/useSeoMeta'
 
 const router = useRouter()
 const route = useRoute()
@@ -56,6 +57,11 @@ const handleLogin = async () => {
 const togglePassword = () => {
   showPassword.value = !showPassword.value
 }
+
+useSeoMeta({
+  title: 'Login Admin',
+  description: 'Halaman login admin SmartOneDev. Akses dashboard pengelolaan konten komunitas RPL SMKS Antartika 1 Sidoarjo.',
+})
 </script>
 
 <template>
@@ -194,3 +200,4 @@ input:-webkit-autofill:active {
   caret-color: white;
 }
 </style>
+

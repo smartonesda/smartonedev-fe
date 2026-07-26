@@ -1,11 +1,18 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { ArrowLeft, Bug } from 'lucide-vue-next'
+import { useSeoMeta } from '@/composables/useSeoMeta'
 
 const router = useRouter()
 
 const FORM_URL =
   'https://docs.google.com/forms/d/e/1FAIpQLSdVzbUcWMzn6oMhFkY8yxCu8XxkEkRhgNsdujlG2yZIpBCBHw/viewform?usp=publish-editor'
+
+useSeoMeta({
+  title: 'Tracker Lomba',
+  description:
+    'Pantau dan lacak perkembangan kompetisi lomba siswa RPL SMKS Antartika 1 Sidoarjo bersama SmartOneDev.',
+})
 
 const goBack = () => {
   if (window.history.length > 1) {
