@@ -61,6 +61,7 @@ const togglePassword = () => {
 useSeoMeta({
   title: 'Login Admin',
   description: 'Halaman login admin SmartOneDev. Akses dashboard pengelolaan konten komunitas RPL SMKS Antartika 1 Sidoarjo.',
+  path: '/login',
 })
 </script>
 
@@ -200,4 +201,6 @@ input:-webkit-autofill:active {
   caret-color: white;
 }
 </style>
+
+
 

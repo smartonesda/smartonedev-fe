@@ -22,6 +22,7 @@ useSeoMeta({
   title: 'Beranda',
   description:
     'SmartOneDev adalah wadah elit siswa Rekayasa Perangkat Lunak SMKS Antartika 1 Sidoarjo untuk showcase project, open source, dan kolaborasi.',
+  path: '/',
 })
 
 onMounted(async () => {

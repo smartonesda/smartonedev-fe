@@ -12,6 +12,7 @@ useSeoMeta({
   title: 'Tracker Lomba',
   description:
     'Pantau dan lacak perkembangan kompetisi lomba siswa RPL SMKS Antartika 1 Sidoarjo bersama SmartOneDev.',
+  path: '/tracker',
 })
 
 const goBack = () => {
@@ -73,3 +74,5 @@ const goBack = () => {
     </div>
   </div>
 </template>
+
+

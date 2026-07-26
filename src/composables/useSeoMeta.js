@@ -4,7 +4,8 @@
  */
 
 const SITE_NAME = 'SmartOneDev'
-const DEFAULT_IMAGE = '/assets/images/light-smartone.png'
+const SITE_URL = 'https://smartonedev.vercel.app'
+const DEFAULT_IMAGE = 'https://smartonedev.vercel.app/assets/images/light-smartone.png'
 
 /**
  * @param {Object} options
@@ -12,19 +13,20 @@ const DEFAULT_IMAGE = '/assets/images/light-smartone.png'
  * @param {string} options.description - Deskripsi halaman
  * @param {string} [options.image]     - URL OG image (opsional, default light-smartone.png)
  * @param {string} [options.type]      - OG type (default: 'website')
- * @param {string} [options.url]       - Canonical URL (opsional)
+ * @param {string} [options.path]      - Path halaman untuk og:url & canonical (misal '/tracker')
  */
-export function useSeoMeta({ title, description, image, type = 'website', url } = {}) {
+export function useSeoMeta({ title, description, image, type = 'website', path = '' } = {}) {
   const fullTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME
   const ogImage = image || DEFAULT_IMAGE
+  const pageUrl = SITE_URL + path
 
   // Helpers
   const setMeta = (selector, attr, value) => {
     let el = document.querySelector(selector)
     if (!el) {
       el = document.createElement('meta')
-      const [attrName, attrVal] = selector.match(/\[([^=]+)="([^"]+)"\]/)?.slice(1) ?? []
-      if (attrName) el.setAttribute(attrName, attrVal)
+      const match = selector.match(/\[([^=]+)="([^"]+)"\]/)
+      if (match) el.setAttribute(match[1], match[2])
       document.head.appendChild(el)
     }
     el.setAttribute(attr, value)
@@ -51,7 +53,7 @@ export function useSeoMeta({ title, description, image, type = 'website', url } 
   setMeta('meta[property="og:description"]', 'content', description)
   setMeta('meta[property="og:image"]', 'content', ogImage)
   setMeta('meta[property="og:type"]', 'content', type)
-  if (url) setMeta('meta[property="og:url"]', 'content', url)
+  setMeta('meta[property="og:url"]', 'content', pageUrl)
 
   // Twitter
   setMeta('meta[name="twitter:title"]', 'content', fullTitle)
@@ -59,5 +61,5 @@ export function useSeoMeta({ title, description, image, type = 'website', url } 
   setMeta('meta[name="twitter:image"]', 'content', ogImage)
 
   // Canonical
-  if (url) setLink('canonical', url)
+  setLink('canonical', pageUrl)
 }

@@ -139,6 +139,7 @@ onMounted(async () => {
         title: parsed.title,
         description: parsed.description || ('Lihat detail project ' + parsed.title + ' \u2014 karya siswa RPL SmartOneDev SMKS Antartika 1 Sidoarjo.'),
         image: parsed.image || undefined,
+        path: '/project/' + (parsed.slug || parsed.id),
       })
       isLoading.value = false
       return
@@ -156,6 +157,7 @@ onMounted(async () => {
         title: found.title,
         description: found.description || ('Lihat detail project ' + found.title + ' \u2014 karya siswa RPL SmartOneDev SMKS Antartika 1 Sidoarjo.'),
         image: found.image || undefined,
+        path: '/project/' + (found.slug || found.id),
       })
       // Cache it in sessionStorage for subsequent navigations
       sessionStorage.setItem('currentProject', JSON.stringify(found))
@@ -453,3 +455,4 @@ onMounted(async () => {
   animation: fadeIn 0.6s ease-out;
 }
 </style>
+
