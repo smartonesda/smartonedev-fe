@@ -9,6 +9,8 @@ const DashboardHome = () => import('@/views/DashboardHome.vue')
 const GalleryManagement = () => import('@/views/GalleryManagement.vue')
 const CategoryManagement = () => import('@/views/CategoryManagement.vue')
 const TrackerLomba = () => import('@/views/TrackerLomba.vue')
+const LearnView = () => import('@/modules/learn/views/LearnView.vue')
+const KaryaView = () => import('@/modules/karya/views/KaryaView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,6 +20,18 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       meta: { title: 'Beranda' }
+    },
+    {
+      path: '/karya',
+      name: 'karya',
+      component: KaryaView,
+      meta: { title: 'Galeri Karya' }
+    },
+    {
+      path: '/learn',
+      name: 'learn',
+      component: LearnView,
+      meta: { title: 'Learn Center' }
     },
     {
       path: '/tracker',

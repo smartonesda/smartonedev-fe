@@ -1,6 +1,7 @@
 <script setup>
 import { RouterView, useRouter } from 'vue-router'
 import { ref } from 'vue'
+import BugReportButton from '@/components/BugReportButton.vue'
 
 const transitionName = ref('slide-right')
 const router = useRouter()
@@ -26,6 +27,9 @@ router.beforeEach((to, from) => {
         <component :is="Component" :key="route.path" />
       </Transition>
     </RouterView>
+
+    <!-- Global Floating Bug Report Button -->
+    <BugReportButton />
   </div>
 </template>
 

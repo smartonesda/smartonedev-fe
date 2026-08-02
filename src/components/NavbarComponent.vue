@@ -11,18 +11,19 @@ const router = useRouter()
 // True kalau sedang di halaman home (/)
 const isHome = computed(() => route.path === '/')
 
-// Anchor links — kalau bukan di home, prefix jadi /#section
+// Anchor links for Home landing page ONLY
 const anchorLinks = [
   { hash: 'beranda', label: 'Beranda' },
   { hash: 'tentang', label: 'Tentang' },
-  { hash: 'karya', label: 'Karya' },
   { hash: 'kolaborasi', label: 'Kolaborasi' },
 ]
 
 const anchorHref = (hash) => isHome.value ? `#${hash}` : `/#${hash}`
 
 const activeSection = ref('beranda')
+const isKaryaActive = computed(() => route.path === '/karya')
 const isTrackerActive = computed(() => route.path === '/tracker')
+const isLearnActive = computed(() => route.path === '/learn')
 
 let ticking = false
 const handleScroll = () => {
@@ -88,6 +89,20 @@ onUnmounted(() => {
           {{ link.label }}
         </a>
         <RouterLink
+          to="/karya"
+          class="nav-link"
+          :class="{ active: isKaryaActive }"
+        >
+          Karya
+        </RouterLink>
+        <RouterLink
+          to="/learn"
+          class="nav-link"
+          :class="{ active: isLearnActive }"
+        >
+          Learn
+        </RouterLink>
+        <RouterLink
           to="/tracker"
           class="nav-link"
           :class="{ active: isTrackerActive }"
@@ -121,6 +136,22 @@ onUnmounted(() => {
       >
         {{ link.label }}
       </a>
+      <RouterLink
+        to="/karya"
+        @click="closeMobileMenu"
+        class="text-white p-2 hover:bg-dark-800 rounded-lg"
+        :class="{ 'text-primary': isKaryaActive }"
+      >
+        Karya
+      </RouterLink>
+      <RouterLink
+        to="/learn"
+        @click="closeMobileMenu"
+        class="text-white p-2 hover:bg-dark-800 rounded-lg"
+        :class="{ 'text-primary': isLearnActive }"
+      >
+        Learn
+      </RouterLink>
       <RouterLink
         to="/tracker"
         @click="closeMobileMenu"

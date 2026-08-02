@@ -16,7 +16,9 @@ useSeoMeta({
 })
 
 const goBack = () => {
-  if (window.history.length > 1) {
+  // Check if there is a previous history state within the SPA to go back to.
+  // Otherwise, default to the root URL (/) to prevent navigating out of the site (e.g. to Google/external page).
+  if (window.history.state && window.history.state.back) {
     router.back()
   } else {
     router.push('/')
@@ -74,5 +76,3 @@ const goBack = () => {
     </div>
   </div>
 </template>
-
-
