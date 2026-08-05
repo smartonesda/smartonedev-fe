@@ -3,7 +3,7 @@ export default [
     id: 'typescript-guidebook',
     title: 'TypeScript Guidebook',
     description: 'Belajar TypeScript Modern dari nol hingga siap membangun aplikasi nyata.',
-    cover: 'assets/images/learn/ts.png',
+    cover: 'https://typescript-guidebook.vercel.app/images/cover-learn.png',
     url: 'https://typescript-guidebook.vercel.app',
     repository: 'https://github.com/smartonesda/typescript-guidebook',
     category: 'Programming',
