@@ -1,39 +1,41 @@
 <script setup>
-import { Code2, FileCode, Coffee, Atom, Database, Server, Smartphone, GitBranch } from 'lucide-vue-next'
+import { Code2, FileCode, Coffee, Atom, Database, Server, Smartphone, GitBranch, Cpu, Terminal } from 'lucide-vue-next'
 
 const techItems = [
-  { icon: Code2, name: 'HTML5', color: 'text-primary' },
-  { icon: FileCode, name: 'CSS3', color: 'text-blue-500' },
-  { icon: Coffee, name: 'JavaScript', color: 'text-yellow-400' },
-  { icon: Atom, name: 'React', color: 'text-cyan-400' },
-  { icon: Database, name: 'Laravel', color: 'text-red-500' },
-  { icon: Server, name: 'PHP', color: 'text-indigo-500' },
-  { icon: Smartphone, name: 'Flutter', color: 'text-blue-400' },
-  { icon: GitBranch, name: 'Git', color: 'text-primary-glow' }
+  { icon: Code2, name: 'HTML5 & CSS3', color: 'text-primary' },
+  { icon: Coffee, name: 'JavaScript ES6+', color: 'text-yellow-400' },
+  { icon: Terminal, name: 'TypeScript', color: 'text-blue-400' },
+  { icon: Atom, name: 'Vue & React', color: 'text-cyan-400' },
+  { icon: Server, name: 'Node.js & Express', color: 'text-emerald-400' },
+  { icon: Database, name: 'Laravel & PHP', color: 'text-red-400' },
+  { icon: Smartphone, name: 'Flutter & Kotlin', color: 'text-blue-400' },
+  { icon: GitBranch, name: 'Git & GitHub Workflow', color: 'text-accent-orange' },
+  { icon: Cpu, name: 'IoT & Microcontrollers', color: 'text-purple-400' }
 ]
 </script>
 
 <template>
-  <div class="bg-dark-900 py-8 border-y border-dark-800 overflow-hidden relative z-20">
-    <div class="absolute left-0 top-0 h-full w-32 bg-gradient-to-r from-dark-900 to-transparent z-10"></div>
-    <div class="absolute right-0 top-0 h-full w-32 bg-gradient-to-l from-dark-900 to-transparent z-10"></div>
+  <div class="bg-[#0e0e11] py-6 border-y border-white/[0.06] overflow-hidden relative z-20">
+    <!-- Edge Gradients for Smooth In/Out Fades -->
+    <div class="absolute left-0 top-0 h-full w-24 sm:w-40 bg-gradient-to-r from-[#0e0e11] via-[#0e0e11]/80 to-transparent z-10 pointer-events-none"></div>
+    <div class="absolute right-0 top-0 h-full w-24 sm:w-40 bg-gradient-to-l from-[#0e0e11] via-[#0e0e11]/80 to-transparent z-10 pointer-events-none"></div>
 
     <div class="flex w-full overflow-hidden">
-      <div class="animate-marquee flex gap-16 items-center whitespace-nowrap py-2">
+      <div class="animate-marquee flex gap-8 sm:gap-12 items-center whitespace-nowrap py-1">
         <!-- First set -->
         <span v-for="(tech, index) in techItems" :key="'first-' + index" class="tech-item">
           <component :is="tech.icon" :class="tech.color" />
-          {{ tech.name }}
+          <span>{{ tech.name }}</span>
         </span>
-        <!-- Second set for seamless loop -->
+        <!-- Second set for seamless continuous loop -->
         <span v-for="(tech, index) in techItems" :key="'second-' + index" class="tech-item">
           <component :is="tech.icon" :class="tech.color" />
-          {{ tech.name }}
+          <span>{{ tech.name }}</span>
         </span>
-        <!-- Third set for extra seamless -->
+        <!-- Third set -->
         <span v-for="(tech, index) in techItems" :key="'third-' + index" class="tech-item">
           <component :is="tech.icon" :class="tech.color" />
-          {{ tech.name }}
+          <span>{{ tech.name }}</span>
         </span>
       </div>
     </div>
