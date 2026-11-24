@@ -173,18 +173,28 @@ const addScreenshot = () => {
   }
 }
 
+// Helper to detect images managed by our backend storage (Cloudinary)
+const isManagedStorageUrl = (url) => {
+  if (!url || typeof url !== 'string') return false
+  return url.includes('res.cloudinary.com') || url.includes('cloudinary.com')
+}
+
+const extractFilenameFromUrl = (url) => {
+  const cleanUrl = url.split('?')[0]
+  const urlParts = cleanUrl.split('/')
+  return urlParts[urlParts.length - 1]
+}
+
 const removeScreenshot = async (index) => {
   const screenshot = formData.value.screenshots[index]
   
-  // If it's an uploaded image (Supabase URL), delete from storage
-  if (screenshot?.url && screenshot.url.includes('supabase')) {
+  // If it's an uploaded image (managed storage URL), delete from storage
+  if (isManagedStorageUrl(screenshot?.url)) {
     try {
-      // Extract filename from URL
-      const urlParts = screenshot.url.split('/')
-      const filename = urlParts[urlParts.length - 1]
+      const filename = extractFilenameFromUrl(screenshot.url)
       
       const token = localStorage.getItem('token')
-      await axios.delete(`${API_URL}/gallery/image/${filename}`, {
+      await axios.delete(`${API_URL}/gallery/image/${encodeURIComponent(filename)}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
     } catch (error) {
@@ -252,13 +262,12 @@ const uploadImage = async (event) => {
   uploadError.value = ''
 
   try {
-    // Delete old image from storage if it was uploaded to Supabase
-    if (formData.value.image && formData.value.image.includes('supabase')) {
+    // Delete old image from storage if it was uploaded to managed storage
+    if (isManagedStorageUrl(formData.value.image)) {
       try {
-        const urlParts = formData.value.image.split('/')
-        const oldFilename = urlParts[urlParts.length - 1]
+        const oldFilename = extractFilenameFromUrl(formData.value.image)
         const token = localStorage.getItem('token')
-        await axios.delete(`${API_URL}/gallery/image/${oldFilename}`, {
+        await axios.delete(`${API_URL}/gallery/image/${encodeURIComponent(oldFilename)}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         })
       } catch (e) {
@@ -350,14 +359,13 @@ const handleSubmit = async () => {
 
   isSubmitting.value = true
   try {
-    // Cleanup: If image changed and old image was from Supabase, delete it
-    if (isEditing.value && originalImage.value && originalImage.value.includes('supabase')) {
+    // Cleanup: If image changed and old image was from managed storage, delete it
+    if (isEditing.value && isManagedStorageUrl(originalImage.value)) {
       if (formData.value.image !== originalImage.value) {
         try {
-          const urlParts = originalImage.value.split('/')
-          const oldFilename = urlParts[urlParts.length - 1]
+          const oldFilename = extractFilenameFromUrl(originalImage.value)
           const token = localStorage.getItem('token')
-          await axios.delete(`${API_URL}/gallery/image/${oldFilename}`, {
+          await axios.delete(`${API_URL}/gallery/image/${encodeURIComponent(oldFilename)}`, {
             headers: { 'Authorization': `Bearer ${token}` }
           })
         } catch (e) {
